@@ -1,13 +1,17 @@
 # Use Ubuntu base image
 FROM ubuntu:latest
 
-# Install FFmpeg and dependencies
-RUN apt update && apt install -y ffmpeg wget tar
+# Install FFmpeg, wget, curl, and tar
+RUN apt update && apt install -y ffmpeg wget curl tar
 
-# Download and install RTSP-simple-server (MediaMTX)
-RUN wget https://github.com/aler9/mediamtx/releases/latest/download/mediamtx_linux_amd64.tar.gz \
-    && tar -xvzf mediamtx_linux_amd64.tar.gz \
-    && chmod +x mediamtx
+# Set MediaMTX version
+ENV MEDIAMTX_VERSION=v1.11.3
+
+# Download and install MediaMTX
+RUN wget https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_v${MEDIAMTX_VERSION}_linux_amd64.tar.gz \
+    && tar -xvzf mediamtx_v${MEDIAMTX_VERSION}_linux_amd64.tar.gz \
+    && mv mediamtx /usr/local/bin/ \
+    && chmod +x /usr/local/bin/mediamtx
 
 # Copy startup script
 COPY start.sh /start.sh
