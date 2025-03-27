@@ -6,9 +6,8 @@ app = Flask(__name__)
 
 # 🎵 RTSP Stream Sources (Modify with your own links)
 RTSP_STREAMS = {
-    "live_1": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI",
-    "camera_2": "rtsp://username:password@192.168.1.101:554/stream2",
-    "public_rtsp": "rtsp://somepublicstream.com/live",
+    "live_1": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI"
+    
 }
 
 # 🔄 Function to process and stream RTSP audio
