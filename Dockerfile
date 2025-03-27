@@ -1,24 +1,20 @@
-# Use Ubuntu base image
-FROM ubuntu:latest
+# Use a lightweight Python image
+FROM python:3.10-slim
 
-# Install FFmpeg, wget, curl, and tar
-RUN apt update && apt install -y ffmpeg wget curl tar
+# Install FFmpeg (needed for streaming)
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
-# Set MediaMTX version
-ENV MEDIAMTX_VERSION=v1.11.3
+# Set working directory
+WORKDIR /app
 
-# Download and install MediaMTX
-RUN wget https://github.com/bluenviron/mediamtx/releases/download/v1.11.3/mediamtx_v1.11.3_linux_amd64.tar.gz \
-  && tar -xvzf mediamtx_v1.11.3_linux_amd64.tar.gz \
-  && mv mediamtx /usr/local/bin/ \
-  && chmod +x /usr/local/bin/mediamtx
+# Copy application files
+COPY . .
 
-# Copy startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose RTSP port
-EXPOSE 8554
+# Expose port 8080 (same as in Flask app)
+EXPOSE 8080
 
-# Run the start script
-CMD ["/start.sh"]
+# Start the application using Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
