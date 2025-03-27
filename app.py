@@ -4,11 +4,10 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
-# 🎵 RTSP Stream Sources (Modify with your own links)
+# 🎵 RTSP Stream Sources
 RTSP_STREAMS = {
     "rahmani_live": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI",
-"asianet_news": "rtsp://tv.tg-gw.com:554/Ko18SgceYX8"
-    
+    "asianet_news": "rtsp://tv.tg-gw.com:554/Ko18SgceYX8"
 }
 
 # 🔄 Function to process and stream RTSP audio
@@ -38,7 +37,7 @@ def generate_rtsp_audio(url):
             print(f"⚠️ Stream error: {e}")
 
         print("🔄 FFmpeg stopped, restarting stream...")
-        time.sleep(5)  # Small delay before retrying
+        time.sleep(5)
 
 # 🌍 Flask Route to Stream Audio
 @app.route("/rtsp/<stream_name>")
