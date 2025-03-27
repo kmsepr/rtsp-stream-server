@@ -6,7 +6,8 @@ app = Flask(__name__)
 
 # 🎵 RTSP Stream Sources (Modify with your own links)
 RTSP_STREAMS = {
-    "live_1": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI"
+    "rahmani_live": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI",
+"asianet_news": "rtsp://tv.tg-gw.com:554/Ko18SgceYX8"
     
 }
 
