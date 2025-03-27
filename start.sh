@@ -1,12 +1,54 @@
-#!/bin/bash
+import subprocess
+import time
+from flask import Flask, Response
 
-# Start the RTSP server
-./mediamtx &
+app = Flask(__name__)
 
-# Start FFmpeg stream
-ffmpeg -re -i "https://edge1.1internet.tv/dash-live2/streams/1tv-dvr/1tvdash.mpd" \
-  -map 0:v:3 -map 0:a:1 \
-  -acodec amr_wb -ar 16000 -ac 1 \
-  -vcodec h263 -vb 70k -r 15 \
-  -vf scale=176:144 \
-  -f rtsp rtsp://127.0.0.1:8554/live
+# 🎵 RTSP Stream Sources (Modify with your own links)
+RTSP_STREAMS = {
+    "live_1": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI",
+    "camera_2": "rtsp://username:password@192.168.1.101:554/stream2",
+    "public_rtsp": "rtsp://somepublicstream.com/live",
+}
+
+# 🔄 Function to process and stream RTSP audio
+def generate_rtsp_audio(url):
+    process = None
+    while True:
+        if process:
+            process.kill()  # Stop the previous FFmpeg instance
+
+        process = subprocess.Popen(
+            [
+                "ffmpeg", "-rtsp_transport", "tcp", "-i", url, "-vn",
+                "-ac", "1", "-b:a", "64k", "-buffer_size", "1024k", "-f", "mp3", "-"
+            ],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, bufsize=8192
+        )
+
+        print(f"🎧 Streaming RTSP Audio: {url} (Mono, 64kbps)")
+
+        try:
+            for chunk in iter(lambda: process.stdout.read(8192), b""):
+                yield chunk
+        except GeneratorExit:
+            process.kill()
+            break
+        except Exception as e:
+            print(f"⚠️ Stream error: {e}")
+
+        print("🔄 FFmpeg stopped, restarting stream...")
+        time.sleep(5)  # Small delay before retrying
+
+# 🌍 Flask Route to Stream Audio
+@app.route("/rtsp/<stream_name>")
+def stream_rtsp(stream_name):
+    url = RTSP_STREAMS.get(stream_name)
+    if not url:
+        return "⚠️ RTSP Stream not found", 404
+
+    return Response(generate_rtsp_audio(url), mimetype="audio/mpeg")
+
+# 🚀 Run Flask Server
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)
