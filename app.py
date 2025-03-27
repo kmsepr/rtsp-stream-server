@@ -7,7 +7,7 @@ app = Flask(__name__)
 # 🎵 RTSP Stream Sources
 RTSP_STREAMS = {
     "rahmani_live": "rtsp://tv.tg-gw.com:554/cJbnWSoivEI",
-    "asianet_news": "rtsp://tv.tg-gw.com:554/Ko18SgceYX8"
+    "asianet_news": "rtsp://tv.tg-gw.com:8080/Ko18SgceYX8"
 }
 
 # 🔄 Function to process and stream RTSP audio
